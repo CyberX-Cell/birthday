@@ -1,0 +1,506 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday {{ friend_name }}!</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff0f8;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden; /* Prevent horizontal scroll from flowers */
+        }
+        
+        /* Flower decorations */
+        .flower {
+            position: fixed;
+            z-index: -1;
+            opacity: 0.7;
+            pointer-events: none; /* Makes flowers non-interactive */
+        }
+        
+        .box-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .content-box {
+            background-color: rgba(255, 255, 255, 0.92);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: relative;
+            z-index: 1; /* Place above flowers */
+        }
+        
+        h1 {
+            color: #ffa2b9; /* Mint blue */
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .birthday-message {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .celebration {
+            margin: 30px 0;
+        }
+        
+        .party-face {
+            font-size: 2em;
+            animation: bounce 1.5s infinite;
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        /* Updated Photo Gallery Styles */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 15px;
+            margin: 20px auto;
+            max-width: 700px;
+            padding: 10px;
+        }
+        
+        .photo {
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .photo img {
+            width: 100%;
+            object-fit: cover;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .photo:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .photo-caption {
+            padding: 8px;
+            background-color: #fff;
+            text-align: center;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .memories-title {
+            color: #9c6986;
+            font-size: 2.2em;
+            margin: 10px 0 15px 0;
+            text-align: left;
+            padding-left: 20px;
+            border-bottom: 2px solid #ffd6eb;
+            padding-bottom: 10px;
+        }
+        
+        .wish-form {
+            margin: 20px 0;
+        }
+        
+        /* Fixed spacing for input fields */
+        textarea, input[type="text"] {
+            width: calc(100% - 25px); /* Accounting for padding and border */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            resize: vertical;
+            box-sizing: border-box; /* Ensures padding is included in width calculation */
+        }
+        
+        input[type="text"] {
+            resize: none;
+        }
+        
+        button {
+            background-color: #ffa2b9; /* Mint blue */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 5px;
+        }
+        
+        button:hover {
+            background-color: #ffa2b9; /* Slightly darker mint blue */
+        }
+        
+        footer {
+            color: #777;
+            font-size: 0.9em;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            opacity: 0.7;
+            animation: fall 5s linear infinite;
+        }
+        
+        .countdown {
+            margin: 10px 0 20px 0;
+            font-size: 1.5em;
+        }
+        
+        .countdown-box {
+            display: inline-block;
+            background-color: #ffa2b9; /* Mint blue */
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 0 5px;
+            min-width: 60px;
+        }
+        
+        .countdown-label {
+            font-size: 0.6em;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .wishes-container {
+            margin: 15px 0;
+            text-align: left;
+        }
+        
+        .wish-card {
+            background-color: #fff3f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border: 2px solid #ffa2b9; /* Mint blue border */
+        }
+        
+        .wish-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #888;
+        }
+        
+        .wish-content {
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+        
+        /* Fixed wish form container with better spacing */
+        .wish-form-container {
+            border: 2px solid #ffa2b9; /* Mint blue border */
+            border-radius: 10px;
+            padding: 25px; /* Increased padding */
+            background-color: #fff;
+        }
+        
+        .wish-form-container form {
+            width: 90%; /* Reduced width of the form inside the container */
+            margin: 0 auto; /* Center the form */
+        }
+        
+        .flash-message {
+            background-color: #66cc99;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(10px, -10px) rotate(10deg); }
+            66% { transform: translate(-5px, 5px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .content-box {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .photo-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .memories-title {
+                font-size: 1.8em;
+                padding-left: 10px;
+            }
+            
+            .wish-form-container form {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Flower decoration elements will be added via JavaScript -->
+    <div id="flowers-container"></div>
+    
+    <div class="box-container">
+        <!-- Box 1: Title -->
+        <div class="content-box">
+            {% if is_birthday %}
+                <h1>Happy Birthday {{ friend_name }}! 🎂</h1>
+                <div class="birthday-message">
+                    <p>Today is your special day! On this beautiful day, I want to celebrate you and everything you mean to me.</p>
+                    <p>You're not just a friend, you're my best friend, and I'm so grateful to have you in my life.</p>
+                    <p>May your day be filled with joy, laughter, and all the things that make you smile!</p>
+                </div>
+            {% else %}
+                <h1>Birthday Countdown for {{ friend_name }}</h1>
+                <div class="birthday-message">
+                    <p>This page is counting down to {{ friend_name }}'s special day on {{ birthday_date }}!</p>
+                    <p>I'm getting everything ready to celebrate my amazing best friend.</p>
+                </div>
+            {% endif %}
+            
+            <!-- Celebration with party faces instead of hearts -->
+            <div class="celebration">
+                <span class="party-face">🥳</span>
+                <span class="party-face" style="animation-delay: 0.5s;">🥳</span>
+                <span class="party-face" style="animation-delay: 1s;">🥳</span>
+            </div>
+        </div>
+        
+        <!-- Box 2: Countdown Timer (only shown if not birthday) -->
+        {% if not is_birthday %}
+        <div class="content-box">
+            <!-- Countdown display -->
+            <div class="countdown">
+                <div class="countdown-box"><span id="days">--</span><div class="countdown-label">days</div></div>
+                <div class="countdown-box"><span id="hours">--</span><div class="countdown-label">hours</div></div>
+                <div class="countdown-box"><span id="minutes">--</span><div class="countdown-label">minutes</div></div>
+                <div class="countdown-box"><span id="seconds">--</span><div class="countdown-label">seconds</div></div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Box 3: Photo Gallery -->
+        <div class="content-box">
+            <h2 class="memories-title">Memories Together</h2>
+            
+            <div class="photo-gallery">
+                <div class="photo">
+                    <img src="/static/photos/photo1.jpg" alt="Memory 1" onerror="this.src='https://placehold.it/400x300?text=Add+Photo'">
+                    <div class="photo-caption">First Day</div>
+                </div>
+                <div class="photo">
+                    <img src="/static/photos/photo2.jpg" alt="Memory 2" onerror="this.src='https://placehold.it/400x300?text=Add+Photo'">
+                    <div class="photo-caption">Beach Trip</div>
+                </div>
+                <div class="photo">
+                    <img src="/static/photos/photo3.jpg" alt="Memory 3" onerror="this.src='https://placehold.it/400x300?text=Add+Photo'">
+                    <div class="photo-caption">Movie Night</div>
+                </div>
+                <div class="photo">
+                    <img src="/static/photos/photo4.jpg" alt="Memory 4" onerror="this.src='https://placehold.it/400x300?text=Add+Photo'">
+                    <div class="photo-caption">Graduation</div>
+                </div>
+                <div class="photo">
+                    <img src="/static/photos/photo5.jpg" alt="Memory 5" onerror="this.src='https://placehold.it/400x300?text=Add+Photo'">
+                    <div class="photo-caption">Birthday Party</div>
+                </div>
+                <div class="photo">
+                    <img src="/static/photos/photo6.jpg" alt="Memory 6" onerror="this.src='https://placehold.it/400x300?text=Add+Photo'">
+                    <div class="photo-caption">Hiking Trip</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Box 4: Wish Form -->
+        <div class="content-box">
+            <div class="wish-form-container">
+                <h2>Send {{ friend_name }} a Birthday Wish</h2>
+                <form action="/wishes" method="post">
+                    <input type="text" name="name" placeholder="Your Name (optional)" />
+                    <textarea name="wish" rows="4" placeholder="Write your special birthday message here..."></textarea>
+                    <button type="submit">Send Wish</button>
+                </form>
+            </div>
+            
+            <!-- Flash messages for form submission feedback -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <!-- Box 5: Wishes Display -->
+        {% if wishes %}
+        <div class="content-box">
+            <h2>Birthday Wishes for {{ friend_name }}</h2>
+            <div class="wishes-container">
+                {% for wish in wishes %}
+                    <div class="wish-card">
+                        <div class="wish-header">
+                            <span class="wish-author">From: {{ wish.name }}</span>
+                            <span class="wish-date">{{ wish.date }}</span>
+                        </div>
+                        <div class="wish-content">{{ wish.wish }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Box 6: Footer -->
+        <div class="content-box">
+            <footer>
+                <p>Made with love for my best friend {{ friend_name }} ❤</p>
+            </footer>
+        </div>
+    </div>
+    
+    {% if is_birthday %}
+    <div id="confetti-container"></div>
+    {% endif %}
+    
+    <script>
+        // Flower Background with more flowers
+        document.addEventListener('DOMContentLoaded', function() {
+            const flowers = [
+                { name: 'Rose', emoji: '🌹', color: '#FF6B6B' },
+                { name: 'Tulip', emoji: '🌷', color: '#FF9E9E' },
+                { name: 'Sunflower', emoji: '🌻', color: '#FFD93D' },
+                { name: 'Hibiscus', emoji: '🌺', color: '#FF77FF' },
+                { name: 'Cherry Blossom', emoji: '🌸', color: '#FFAFCC' },
+                { name: 'Lotus', emoji: '🪷', color: '#F8A1D1' },
+                { name: 'Daisy', emoji: '🌼', color: '#FAEE7E' },
+                { name: 'Orchid', emoji: '🪻', color: '#DDA0DD' }
+            ];
+            
+            const flowersContainer = document.getElementById('flowers-container');
+            
+            // Create 60 random flowers (doubled from 30)
+            for (let i = 0; i < 60; i++) {
+                const flower = document.createElement('div');
+                const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
+                
+                flower.className = 'flower';
+                flower.textContent = randomFlower.emoji;
+                flower.style.left = `${Math.random() * 100}vw`;
+                flower.style.top = `${Math.random() * 100}vh`;
+                flower.style.fontSize = `${Math.random() * 30 + 20}px`;
+                flower.style.opacity = `${Math.random() * 0.4 + 0.3}`;
+                
+                // Set unique animation for each flower
+                flower.style.animation = `float ${Math.random() * 6 + 4}s ease-in-out infinite`;
+                flower.style.animationDelay = `${Math.random() * 5}s`;
+                
+                flowersContainer.appendChild(flower);
+            }
+        });
+        
+        {% if is_birthday %}
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#ff3366', '#ff66b3', '#ff99cc', '#ffccff', '#cc99ff', '#9966ff'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 5) + 's';
+                document.body.appendChild(confetti);
+            }
+        }
+        
+        // Run when page loads
+        window.onload = function() {
+            createConfetti();
+        };
+        {% else %}
+        // Calculate and display countdown
+        function updateCountdown() {
+            // Get the birthday date
+            const birthdayDate = "{{ birthday_date }}";
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            
+            // Parse the birthday date (format: "Month Day")
+            const parts = birthdayDate.split(" ");
+            const month = new Date(Date.parse(parts[0] + " 1, 2000")).getMonth();
+            const day = parseInt(parts[1]);
+            
+            // Create date object for this year's birthday
+            let targetDate = new Date(currentYear, month, day);
+            
+            // If birthday has passed this year, use next year
+            if (now > targetDate) {
+                targetDate = new Date(currentYear + 1, month, day);
+            }
+            
+            // Calculate time difference
+            const diff = targetDate - now;
+            
+            // Calculate days, hours, minutes, seconds
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Update the countdown display
+            document.getElementById("days").textContent = days;
+            document.getElementById("hours").textContent = hours;
+            document.getElementById("minutes").textContent = minutes;
+            document.getElementById("seconds").textContent = seconds;
+        }
+        
+        // Update countdown every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        {% endif %}
+    </script>
+</body>
+</html>
