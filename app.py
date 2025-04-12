@@ -8,8 +8,8 @@ app = Flask(__name__)
 app.secret_key = "birthday_secret_key"  # Required for flashing messages
 
 # Configuration
-FRIEND_NAME = "Sanskrutiii"  # Change this to your friend's name
-BIRTHDAY_DATE = "September 9"  # Change this to your friend's birthday
+FRIEND_NAME = "VEDANT"  # Change this to your friend's name
+BIRTHDAY_DATE = "February 13"  # Change this to your friend's birthday
 WISHES_FILE = "wishes.json"  # File to store wishes
 
 # Ensure the photos directory exists
